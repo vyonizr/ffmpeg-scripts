@@ -1,3 +1,3 @@
 #!/bin/sh
 mkdir -p -- "output"
-ffmpeg -ss $1 -i "$2" -to $3 -c copy -copyts output/"$4"
+ffmpeg -i "$2" -ss $1 -to $3 -acodec libmp3lame -vcodec libx264 output/"$4"

@@ -1,15 +1,21 @@
 # :scroll: FFMPEG Scripts
 
-Make sure ffmpeg is already installed on your system (download [here](https://ffmpeg.org/)). Outputs are placed inside `output` directory and creates itself if it does not exist.
+Outputs are placed inside `output` directory. The folder creates itself if it does not exist.
+
+## Prerequisites
+
+Make sure FFmpeg is already installed on your system (download [here](https://ffmpeg.org/)).
 
 | Action | Script | Usage  |
 | - | - | - |
 | [Convert video or audio](#twisted_rightwards_arrows-convert-video-or-audio) | `converter.sh` | `./converter.sh input.mkv output_converted.mp4` |
-| [Rescale video](#arrow_up_down-rescale-video) | `rescale_video.sh` | `./rescale_video.sh input.mp4 360 output_rescale.mp4` |
-| [Trim video](#scissors-trim-video) | `trim_video.sh` | `./trim_video.sh 00:03:26 input.mp4 00:05:46 output_trimmed.mp4` |
 | [Concatenate MP4 videos](#link-concatenate-mp4-videos) | Multiple scripts | Refer to the details |
 | [Convert GIF to web-optimized MP4 and WEBM](#twisted_rightwards_arrows-convert-gif-to-web-optimized-mp4-and-webm) | `gif_to_video.sh` | `./gif_to_video.sh input.gif output_web` |
+| [Convert video to GIF](#twisted_rightwards_arrows-convert-video-to-gif) | `video_to_gif.sh` | `./video_to_gif.sh input.mp4 output` |
 | [Convert video to WEBM](#twisted_rightwards_arrows-convert-video-to-webm) | `webm_converter.sh` | `./webm_converter.sh input.mp4 output` |
+| [Rescale video](#arrow_up_down-rescale-video) | `rescale_video.sh` | `./rescale_video.sh input.mp4 360 output_rescale.mp4` |
+| [Rotate Video](#arrows_counterclockwise-rotate-video) | `rotate_video.sh` | `./rotate_video.sh input.mp4 output` |
+| [Trim video](#scissors-trim-video) | `trim_video.sh` | <ul><li>`./trim_video.sh 00:03:26 input.mp4 00:05:46 output_trimmed.mp4` (in seconds)</li><li>`./trim_video.sh 00:03:26.265 input.mp4 00:05:46.197 output_trimmed.mp4` (in miliseconds)</li></ul>|
 
 ### :twisted_rightwards_arrows: Convert video or audio
 
@@ -58,9 +64,9 @@ ffmpeg -i input.mp4 -vf scale=-2:360 output/"output_rescaled.mp4"
 ./trim_video.sh <1> <2> <3> <4>
 ```
 
-- `1`: seek start with HH:MM:SS.mmm* format
+- `1`: seek start with `HH:MM:SS.mmm`* format
 - `2`: input file
-- `3`: seek end with HH:MM:SS.mmm* format
+- `3`: seek end with `HH:MM:SS.mmm`* format
 - `4`: output file
 
 *H: hours, M: minutes, S: seconds, mmm (optional): miliseconds
@@ -143,6 +149,28 @@ ffmpeg -i input.gif -c vp9 -b:v 0 -crf 41 output/output_web.webm
 
 [Move to top](#scroll-ffmpeg-scripts)
 
+### :twisted_rightwards_arrows: Convert video to GIF
+
+```shell
+./video_to_gif.sh <1> <2>
+```
+
+- `1`: input video file
+- `2`: output name (without extension)
+
+#### Example
+
+```shell
+./video_to_gif.sh input.mp4 output
+# What it does
+ffmpeg -i "input.mp4" \
+  -vf "fps=10,scale=360:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
+  -loop 0 output.gif \
+```
+
+[Move to top](#scroll-ffmpeg-scripts)
+
+
 ### :twisted_rightwards_arrows: Convert video to WEBM
 
 ```shell
@@ -158,6 +186,34 @@ ffmpeg -i input.gif -c vp9 -b:v 0 -crf 41 output/output_web.webm
 ./webm_converter.sh input.mp4 output
 # What it does
 ffmpeg -i "input.mp4" -vf setsar=1:1 output/output.webm
+```
+
+[Move to top](#scroll-ffmpeg-scripts)
+
+### :arrows_counterclockwise: Rotate Video
+
+```shell
+./rotate_video.sh <1> <2> <3>
+```
+
+- `1`: input file
+- `2`: refer to [Rotate Mode](#rotate-mode)
+- `3`: output name (without extension)
+
+#### Rotate Mode
+```
+0 = 90° counter-clockwise and vertical flip
+1 = 90° clockwise
+2 = 90° counter-clockwise
+3 = 90° clockwise and vertical flip
+```
+
+#### Example
+
+```shell
+./rotate_video.sh input.mp4 1 output
+# What it does
+ffmpeg -i "input.mp4" -vf "transpose=1" output/"output.mp4"
 
 ```
 
